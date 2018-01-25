@@ -9,47 +9,18 @@
     <title>diplom-app</title>
   </head>
   <body>
-    <section class="welcomePage align-items-center">
-        <div class="container welcomePage__container">
-          <div class="row justify-content-center">
-            <h2 class="welcomePage__header col-11 col-sm-9 col-md-8 ml-auto mr-auto textCenter">
-              Welcome to Todo app
-            </h2>
-            <div class="welcomePage__discr col-11 col-sm-9 col-md-8 ml-auto mr-auto textCenter">
-              Please enter your data and press “start” button
-            </div>
-      
-            <form action="#" class="form-horizontal welcomePage__registrationForm col-11 col-sm-9 col-md-8">
-              <div class="form-group">
-                <label for="inputEmail">Your email:</label>
-                <input type="email" class="form-control welcomePage__registrationForm-email" id="inputEmail" aria-describedby="emailHelp" placeholder="Please enter your email">
-              </div>
-              <div class="form-group">
-                <label for="inputPassword">Your password:</label>
-                <input type="password" class="form-control welcomePage__registrationForm-pass" id="inputPassword" placeholder="Please enter your password">
-              </div>
-              <div class="alert welcomePage__registrationForm-alert" role="alert">
-                Invalid input data
-              </div>
-              <div class="textCenter">
-                <button type="submit" class="btn btn-lg welcomePage__registrationForm-pinkButton text-uppercase col-sm-5">Start</button>
-              </div>
-            </form>
-          </div>
-        </div>  
-    </section>
-    
-    <section class="dashboard"></section>
-    <section class="profile"></section>
-    <section class="addTask"></section>
-    <section class="editTask"></section>
-
-
+    <div id="app"></div>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="./node_modules/vue/dist/vue.js"></script>
+    <script type="text/javascript" src="./node_modules/vue-router/dist/vue-router.js"></script>
+    <script type="text/javascript" src="./scripts/Welcome.js"></script>
+    <script type="text/javascript" src="./scripts/Dashboard.js"></script>
+    <script type="text/javascript" src="./scripts/router.js"></script>
+    <script type="text/javascript" src="./scripts/app.js"></script>
   </body>
 </html>

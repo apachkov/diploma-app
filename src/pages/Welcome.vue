@@ -16,11 +16,11 @@
                     class="form-horizontal welcomePage__registrationForm basic-form col-11 col-sm-9 col-md-8">
                 <div class="form-group">
                   <label for="inputEmail">Your email:</label>
-                  <input type="email" class="form-control welcomePage__registrationForm-email basic-form-text-input" id="inputEmail" aria-describedby="emailHelp" placeholder="Please enter your email">
+                  <input type="email" v-model="email" class="form-control welcomePage__registrationForm-email basic-form-text-input" id="inputEmail" aria-describedby="emailHelp" placeholder="Please enter your email">
                 </div>
                 <div class="form-group">
                   <label for="inputPassword">Your password:</label>
-                  <input type="password" class="form-control welcomePage__registrationForm-pass basic-form-text-input" id="inputPassword" placeholder="Please enter your password">
+                  <input type="password" v-model="password" class="form-control welcomePage__registrationForm-pass basic-form-text-input" id="inputPassword" placeholder="Please enter your password">
                 </div>
                 <div class="alert basic-form__alert" role="alert">
                   Invalid input data
@@ -28,7 +28,7 @@
                 <!-- <div class="text-center">
                   <button type="submit" class="btn btn-lg basic-form-button basic-form-button-pink welcomePage__registrationForm-pinkButton col-sm-5">Start</button>
                 </div> -->
-                <router-link :to="{name: 'Dashboard'}" class="btn btn-lg basic-form-button basic-form-button-pink welcomePage__registrationForm-pinkButton col-sm-5" >START</router-link>
+                <button type="submit" class="btn btn-lg basic-form-button basic-form-button-pink welcomePage__registrationForm-pinkButton col-sm-5" >START</button>
               </form>
             </div>
           </div>
@@ -40,9 +40,37 @@
 <script>
   export default {
     name: 'Welcome',
+    data: function() {
+      return {
+        email: '',
+        password: ''
+      }
+    },
     methods: {
     	toDashboard: function() {
-    		this.$router.push({ name: 'Dashboard' });
+        if (!this.email || !this.password) return;
+
+        const that = this;
+
+        const http = new XMLHttpRequest();
+
+        http.open('POST', 'http://localhost:3500/login');
+        http.setRequestHeader("Content-type", "application/json");
+
+        http.onreadystatechange = function() {
+          if(http.readyState == XMLHttpRequest.DONE && http.status == 200) {
+            localStorage.setItem('credentials', http.responseText);
+
+            that.$router.push({ name: 'Dashboard' });
+          }
+        };
+
+        const sendDate = {
+          login: that.email,
+          password: that.password
+        };
+
+        http.send(JSON.stringify(sendDate));    		
     	}
     }
   };

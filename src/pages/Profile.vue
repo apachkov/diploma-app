@@ -47,7 +47,7 @@
                 <div class="form-group row right-form__group row">
                   <label for="right-form-pass" class="col-sm-4 col-md-5 col-xl-3 col-form-label right-form__group-label">Password</label>
                   <div class="col-10 col-sm-7">
-                    <input type="password" v-model="password" class="form-control basic-form-text-input right-form__group-text-input" id="right-form-pass">
+                   <input type="password" v-model="password" class="form-control basic-form-text-input right-form__group-text-input" id="right-form-pass">
                   </div>
                 </div>        
                 <div class="row">
@@ -70,6 +70,8 @@
 </template>
 
 <script>
+  import { getProfile, setProfile } from '@/services/http.js'
+
   export default {
     name: 'Profile',
     data() {
@@ -83,60 +85,30 @@
       };
     },
     created: function() {
-      const that = this;
-      that.credentials = JSON.parse(localStorage.getItem('credentials'));
-
-      const http = new XMLHttpRequest();
-
-      http.open('GET', 'http://localhost:3500/profile');
-      http.setRequestHeader("Content-type", "application/json");
-      http.setRequestHeader("Authorization", "Bearer " + that.credentials.token);
-
-      http.onreadystatechange = function() {
-        if(http.readyState == XMLHttpRequest.DONE && http.status == 200) {
-          const data = JSON.parse(http.responseText);
-
-          that.name = data.name;
-          that.currentName = data.name;
-          that.avatar = data.avatar;
-          that.email = data.email;
-
-        }
-      };
-
-      http.send();
+      getProfile().then((data) => {
+        this.email = data.email;
+        this.avatar = data.avatar;
+        this.name = data.name;
+        this.currentName = data.currentName;
+      })
     },
     methods: {
     updateProfile: function() {
-        const that = this;
-
-        const http = new XMLHttpRequest();
-
-        http.open('PUT', 'http://localhost:3500/profile');
-        http.setRequestHeader("Content-type", "application/json");
-        http.setRequestHeader("Authorization", "Bearer " + that.credentials.token);
-
-        http.onreadystatechange = function() {
-          if(http.readyState == XMLHttpRequest.DONE && http.status == 200) {
-            const data = JSON.parse(http.responseText);
-
-            that.currentName = data.name;
-            that.avatar = data.avatar;
-            that.email = data.email;
-          }
-        };
-
         const sendDate = {
-          name: that.name,
-          avatar: that.avatar,
-          email: that.email
+          name: this.name,
+          avatar: this.avatar,
+          email: this.email
         };
 
-        if (that.password) {
-          sendDate.password = that.password;
+        if (this.password) {
+          sendDate.password = this.password;
         }
 
-        http.send(JSON.stringify(sendDate));        
+        setProfile(sendDate).then((data) => {
+            this.currentName = data.name;
+            this.avatar = data.avatar;
+            this.email = data.email;
+        })   
       }
     }
 

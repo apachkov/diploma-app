@@ -7,10 +7,10 @@ import Profile from '@/pages/Profile'
 
 Vue.use(Router)
 
-export default new Router({
+const router =  new Router({
   routes: [
     {
-      path: '/',
+      path: '/login',
       name: 'welcome',
       component: Welcome
     },
@@ -25,4 +25,29 @@ export default new Router({
       component: Profile
     }
   ]  
-})
+});
+
+router.beforeEach((to, from, next) => {
+  const credentials = JSON.parse(localStorage.getItem('credentials'));
+
+  if (to.path === '/') {
+    if (credentials && credentials.token) {
+      next({name: 'Dashboard'});
+    } else {
+      next({name: 'welcome'});
+    }
+    
+    return;
+  }
+
+  if (to.name !== 'welcome') {
+    if (!credentials || !credentials.token) {
+      next({name: 'welcome'});
+      return;
+    }
+  }
+
+  next();
+});
+
+export default router;

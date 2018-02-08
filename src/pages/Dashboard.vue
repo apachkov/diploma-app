@@ -61,11 +61,7 @@
                   </div>
 
                   <div class="row dashboard__list-item"
-                       :class="{
-                        'dashboard__list_status-inprogress': item.status === 'inprogress',
-                        'dashboard__list_status-todo': item.status === 'todo',
-                        'dashboard__list_status-done': item.status === 'done',
-                        }"
+                       :class="['dashboard__list_status-' + item.status, 'class-01']"
                        v-for="(item, itemKey, index) in filteredTasks">
                     <div class="dashboard__list-item-time"></div>
                     <h3 class="dashboard__list-item-name mr-auto">{{ item.title }}</h3>
@@ -91,27 +87,18 @@
 
 <script>
   import Slick from 'vue-slick';
+  import { getDashboard } from '@/services/http.js';
+  import { setWSConnection } from '@/services/ws.js';
 
   export default {
     name: 'Dashboard',
     components: { Slick },
     created: function() {
-      const that = this;
-      const credentials = JSON.parse(localStorage.getItem('credentials'));
+      getDashboard().then((data) => {
+        this.$store.commit('SET_DASHBOARD', data);
+      });
 
-      const http = new XMLHttpRequest();
-
-      http.open('GET', 'http://localhost:3500/tasks');
-      http.setRequestHeader("Content-type", "application/json");
-      http.setRequestHeader("Authorization", "Bearer " + credentials.token);
-
-      http.onreadystatechange = function() {
-        if(http.readyState == XMLHttpRequest.DONE && http.status == 200) {
-          that.items = JSON.parse(http.responseText);
-        }
-      };
-
-      http.send();
+      setWSConnection();
     },
     data() {
       return {
@@ -139,23 +126,6 @@
             slidesToShow: 1,
             speed: 100
             // Any other options that can be got from plugin documentation
-        },
-        items: {
-          "3rj.u7": {
-            "title": "Test title",
-            "description": "Lorem ipsum dolor sit amet, consectetur adipisicing.",
-            "status": "done"
-          },
-          "6g5.ct": {
-            "title": "Test title 2",
-            "description": "Lorem ipsum dolor sit amet, consectetur adipisicing.",
-            "status": "inprogress"
-          },
-          "571.ep": {
-            "title": "Test title 3",
-            "description": "Lorem ipsum dolor sit amet, consectetur adipisicing.",
-            "status": "todo"
-          }
         }
       };
     },
@@ -170,6 +140,9 @@
           }
 
           return result;
+      },
+      items: function() {
+        return this.$store.state.socket.dashboard;
       }
     },
     methods: {
@@ -192,12 +165,12 @@
       },
       toAddTask: function() {
         this.$router.push({ name: 'addTask' });
-      },
-      
+      },      
       toProfile: function() {
         this.$router.push({ name: 'profile' });
       }, 
       toWelcome: function() {
+        localStorage.removeItem('credentials')
         this.$router.push({ name: 'welcome' });
       }
     }

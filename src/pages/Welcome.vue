@@ -38,6 +38,8 @@
 </template>
 
 <script>
+  import { logIn, errHendler } from '@/services/http.js';
+
   export default {
     name: 'Welcome',
     data: function() {
@@ -50,27 +52,17 @@
     	toDashboard: function() {
         if (!this.email || !this.password) return;
 
-        const that = this;
-
-        const http = new XMLHttpRequest();
-
-        http.open('POST', 'http://localhost:3500/login');
-        http.setRequestHeader("Content-type", "application/json");
-
-        http.onreadystatechange = function() {
-          if(http.readyState == XMLHttpRequest.DONE && http.status == 200) {
-            localStorage.setItem('credentials', http.responseText);
-
-            that.$router.push({ name: 'Dashboard' });
-          }
-        };
-
         const sendDate = {
-          login: that.email,
-          password: that.password
+          login: this.email,
+          password: this.password
         };
 
-        http.send(JSON.stringify(sendDate));    		
+        logIn(sendDate).then((credentials) => {
+          localStorage.setItem('credentials', credentials);
+
+          this.$router.push({ name: 'Dashboard' });
+          return credentials;
+        }).catch(errHendler);      		
     	}
     }
   };

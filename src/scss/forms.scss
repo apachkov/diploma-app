@@ -41,6 +41,10 @@
 		font-size: 14px;
 		line-height: 1;
 		color: #262626;
+
+		&--active {
+			opacity: 1;
+		}
 	}
 }
 

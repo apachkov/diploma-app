@@ -4,6 +4,8 @@ import HelloWorld from '@/components/HelloWorld'
 import Welcome from '@/pages/Welcome'
 import Dashboard from '@/pages/Dashboard'
 import Profile from '@/pages/Profile'
+import AddTask from '@/pages/AddTask'
+import NotFound from '@/pages/NotFound'
 
 Vue.use(Router)
 
@@ -23,6 +25,16 @@ const router =  new Router({
       path: '/profile',
       name: 'Profile',
       component: Profile
+    },    
+    { 
+      path: '/addTask/:taskId?',
+      name: 'AddTask',
+      component: AddTask
+    },    
+    { 
+      path: '*',
+      name: 'NotFound',
+      component: NotFound
     }
   ]  
 });

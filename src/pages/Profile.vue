@@ -10,25 +10,7 @@
           </div>
           <div class="row profile__content">
             <div class="offset-md-1 col-md-3">
-              <div class="profile__content-left text-center">
-                <div class="row">
-                  <img class="rounded-circle profile__content-left-avatar mx-auto" :src="avatar || 'assets/avatar.png'" alt="avatar">
-                </div>
-                <div class="row">
-                  <p class="profile__content-left-name col-sm-7 col-md-12 mx-auto">{{ currentName || 'Alex' }}</p>
-                </div>
-                <div class="profile__content-left-buttons left-buttons row flex-column">
-                  <div class="col-10 col-sm-7 col-md-12 mx-auto">
-                    <a href="#addTask" class="left-buttons-button left-buttons-button-darkblue">Add Task</a>
-                  </div>
-                  <div class="col-10 col-sm-7 col-md-12 mx-auto">
-                    <a href="#dashboard" class="left-buttons-button left-buttons-button-blue">Dashboard</a>
-                  </div>
-                  <div class="col-10 col-sm-7 col-md-12 mx-auto">
-                    <a href="#/" class="left-buttons-button left-buttons-button-pink">exit</a>
-                  </div>
-                </div>
-              </div>
+              <navigation :is-profile="true"></navigation>
             </div>
             <div class="col-md-5 offset-md-1">
               <form action="#" @submit.prevent="updateProfile" class="basic-form right-form">
@@ -70,13 +52,10 @@
 </template>
 
 <script>
-  import { getProfile, setProfile } from '@/services/http.js'
-
   export default {
     name: 'Profile',
     data() {
       return {
-        currentName: '',
         name: '',
         avatar: '',
         email: '',
@@ -84,16 +63,26 @@
         credentials: {}
       };
     },
-    created: function() {
-      getProfile().then((data) => {
-        this.email = data.email;
-        this.avatar = data.avatar;
-        this.name = data.name;
-        this.currentName = data.currentName;
-      })
+    computed: {
+      currentName: function() { 
+        return this.$store.state.profile.name
+      },
+      currentAvatar: function() { 
+        return this.$store.state.profile.avatar
+      },
+      currentEmail: function() { 
+        return this.$store.state.profile.email
+      }
+    },
+    created() {
+      this.$store.dispatch('LOAD_PROFILE').then(() => {
+          this.name = this.currentName;
+          this.avatar = this.currentAvatar;
+          this.email = this.currentEmail;
+        });
     },
     methods: {
-    updateProfile: function() {
+      updateProfile: function() {
         const sendDate = {
           name: this.name,
           avatar: this.avatar,
@@ -104,11 +93,10 @@
           sendDate.password = this.password;
         }
 
-        setProfile(sendDate).then((data) => {
-            this.currentName = data.name;
-            this.avatar = data.avatar;
-            this.email = data.email;
-        })   
+        this.$store.dispatch('UPDATE_PROFILE', sendDate)
+          .then(() => {
+            this.$router.push({ name: 'Dashboard' });
+          });
       }
     }
 

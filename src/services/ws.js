@@ -52,7 +52,9 @@ export const setTask = function(taskId, title, description, status) {
 		status: status || 'todo'
 	}
 
-	ws.send(JSON.stringify(taskData));	
+	ws.send(JSON.stringify(taskData));
+
+	return taskData;
 }
 
 export const removeTask = function(taskId) {
@@ -63,4 +65,6 @@ export const removeTask = function(taskId) {
 	}
 
 	ws.send(JSON.stringify(taskData));
+
+	return taskData;
 }

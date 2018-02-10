@@ -10,33 +10,7 @@
           </div>
           <div class="row profile__content">
             <div class="offset-md-1 col-md-3">
-              <div class="profile__content-left text-center">
-                <div class="row">
-                  <img class="rounded-circle profile__content-left-avatar mx-auto" src="../assets/avatar.png" alt="avatar">
-                </div>
-                <div class="row">
-                  <p class="profile__content-left-name col-sm-7 col-md-12 mx-auto">name</p>
-                </div>
-                <div class="profile__content-left-buttons left-buttons row flex-column">
-                  
-                  <div v-on:submit.prevent="toAddTask" 
-                       class="col-10 col-sm-7 col-md-12 mx-auto">
-                    <router-link :to="{name: 'AddTask'}" class="left-buttons-button left-buttons-button-darkblue">Add Task </router-link>
-                  </div>
-
-                  <div v-on:submit.prevent="toProfile"
-                       class="col-10 col-sm-7 col-md-12 mx-auto">
-                    <router-link :to="{name: 'Profile'}" class="left-buttons-button left-buttons-button-blue">Edit profile</router-link>
-                  </div>
-
-                  <div class="col-10 col-sm-7 col-md-12 mx-auto">
-                    <a href="#"
-                       v-on:click.prevent="toWelcome"
-                       class="left-buttons-button left-buttons-button-pink">exit</a>
-                  </div>
-
-                </div>
-              </div>
+              <navigation :is-dashboard="true"></navigation>
             </div>
             <div class="col-10 col-sm-9 col-md-7 dashboard">
 
@@ -69,9 +43,11 @@
                       <a href="#"
                          @click="deleteTask(itemKey)"
                          class="dashboard__list-item-delete"></a>
-                      <a href="#" class="dashboard__list-item-edit"></a>
                       <a href="#"
-                         @click="doneToggle(itemKey)"
+                         @click.prevent="updateTask(itemKey)"
+                         class="dashboard__list-item-edit"></a>
+                      <a href="#"
+                         @click.prevent="doneToggle(itemKey)"
                          class="dashboard__list-item-tick"></a>
                     </div>
                   </div>
@@ -87,16 +63,13 @@
 
 <script>
   import Slick from 'vue-slick';
-  import { getDashboard } from '@/services/http.js';
   import { setWSConnection } from '@/services/ws.js';
 
   export default {
     name: 'Dashboard',
     components: { Slick },
     created: function() {
-      getDashboard().then((data) => {
-        this.$store.commit('SET_DASHBOARD', data);
-      });
+      this.$store.dispatch('LOAD_DASHBOARD');
 
       setWSConnection();
     },
@@ -148,11 +121,18 @@
     methods: {
       doneToggle: function(taskKey) {
         const oldStatus = this.items[taskKey].status;
+        const newStatus = oldStatus === 'done' ? 'inprogress' : 'done';
 
-        this.items[taskKey].status = oldStatus === 'done' ? 'inprogress' : 'done';
+        const uTask = {
+          ...this.items[taskKey],
+          taskId: taskKey,
+          status: newStatus
+        };
+
+        this.$store.dispatch('CHANGE_TASK_STATUS', uTask);
       },
       deleteTask(taskKey) {
-        this.$delete(this.items, taskKey);
+        this.$store.dispatch('DELETE_TASK_STATUS', taskKey);
       },
       next() {
         this.$refs.slick.next();
@@ -164,7 +144,10 @@
         this.currentFilterStatus = this.filterItems[currentSlide].status;
       },
       toAddTask: function() {
-        this.$router.push({ name: 'addTask' });
+        this.$router.push({ name: 'AddTask' });
+      },
+      updateTask: function(taskId) {
+        this.$router.push({ name: 'AddTask', params: { taskId: taskId } });
       },      
       toProfile: function() {
         this.$router.push({ name: 'profile' });
